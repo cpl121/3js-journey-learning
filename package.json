@@ -1,0 +1,31 @@
+{
+  "name": "3js-journey-learning",
+  "version": "1.0.0",
+  "description": "Learning projects and experiments from the Three.js Journey course.",
+  "keywords": [
+    "three.js",
+    "course",
+    "challenge"
+  ],
+  "homepage": "https://github.com/cpl121/3js-journey-learning#readme",
+  "bugs": {
+    "url": "https://github.com/cpl121/3js-journey-learning/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cpl121/3js-journey-learning.git"
+  },
+  "license": "MIT",
+  "author": "cpl121",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.175.0",
+    "vite": "^6.2.6"
+  }
+}
