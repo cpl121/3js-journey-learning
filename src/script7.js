@@ -10,86 +10,80 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
-// Object
-// const geometry = new THREE.BoxGeometry(1, 1, 1, 4, 4, 4)
-
-/* const positionsArray = new Float32Array(9)
-
-positionsArray[0] = 0
-positionsArray[1] = 0
-positionsArray[2] = 0
-
-positionsArray[3] = 0
-positionsArray[4] = 1
-positionsArray[5] = 0
-
-positionsArray[6] = 1
-positionsArray[7] = 0
-positionsArray[8] = 0 */
-
-const geometry = new THREE.BufferGeometry()
-
-/* const positionsArray = new Float32Array([
-    0, 0, 0, // first vertex
-    0, 1, 0, // second vertex
-    1, 0, 0, // third vertex
-])
-
-const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3)
-geometry.setAttribute('position', positionsAttribute) */
-
-const count = 50
-const positionsArray = new Float32Array(count * 3 * 3) // 3 vertex and 3 axes por each vertex
-
-for (let i = 0; i < count * 3 * 3; i++) {
-    positionsArray[i] = (Math.random() - 0.5) * 3
-}
-
-const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3)
-geometry.setAttribute('position', positionsAttribute)
-
-const material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
+/**
+ * Object
+ */
+const geometry = new THREE.BoxGeometry(1, 1, 1)
+const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
 const mesh = new THREE.Mesh(geometry, material)
 scene.add(mesh)
 
-// Sizes
+/**
+ * Sizes
+ */
 const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
 }
 
-window.addEventListener('resize', () =>
-{
+window.addEventListener('resize', () => {
     // Update sizes
     sizes.width = window.innerWidth
     sizes.height = window.innerHeight
 
-    // Update camera
+    //Update camera
     camera.aspect = sizes.width / sizes.height
     camera.updateProjectionMatrix()
 
     // Update renderer
     renderer.setSize(sizes.width, sizes.height)
+    // Se pone dentro del resize por si se cambia la pestaña de una ventana a otra
+    // Por ejemplo de la pantalla del portatil a una externa
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
 
-// Camera
+window.addEventListener('dblclick', () => {
+
+    const fullScreenElement = document.fullscreenElement || document.webkitFullscreenElement
+
+    if (!fullScreenElement){
+        if (canvas.requestFullscreen) canvas.requestFullscreen()
+        else if (canvas.webkitRequestFullscreen) canvas.webkitRequestFullscreen() // Safari 
+    } else {
+        if (document.exitFullscreen) document.exitFullscreen()
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen() // Safari
+    }
+})
+
+/**
+ * Camera
+ */
+// Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
 camera.position.z = 3
 scene.add(camera)
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
+// controls.enabled = false
 controls.enableDamping = true
 
-// Renderer
+/**
+ * Renderer
+ */
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas
 })
 renderer.setSize(sizes.width, sizes.height)
+// Mejora la calidad de la imagen ajustandola al pixel ratio, pero si se tiene un pixel ratio
+// superior a 3, no se va a notar diferencia de ver los objetos, pero si de performance, por eso
+// se limita el pixel ratio a 2. Se podria poner a 3 como maximo si se necesita mas calidad
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
-// Animate
+
+/**
+ * Animate
+ */
 const clock = new THREE.Clock()
 
 const tick = () =>
