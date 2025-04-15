@@ -1,18 +1,5 @@
 import * as THREE from 'three'
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-
-/**
- * Cursor
- */
-/* const cursor = {
-    x: 0,
-    y: 0
-}
-
-window.addEventListener('mousemove', (event) => {
-    cursor.x = event.clientX / sizes.width - 0.5
-    cursor.y = -(event.clientY / sizes.height - 0.5)
-}) */
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 /**
  * Base
@@ -20,63 +7,88 @@ window.addEventListener('mousemove', (event) => {
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
 
-// Sizes
-const sizes = {
-    width: 800,
-    height: 600
-}
-
 // Scene
 const scene = new THREE.Scene()
 
-// Object
-const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(1, 1, 1, 5, 5, 5),
-    new THREE.MeshBasicMaterial({ color: 0xff0000 })
-)
+/**
+ * Object
+ */
+const geometry = new THREE.BoxGeometry(1, 1, 1)
+const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+const mesh = new THREE.Mesh(geometry, material)
 scene.add(mesh)
 
-// Camera
+/**
+ * Sizes
+ */
+const sizes = {
+    width: window.innerWidth,
+    height: window.innerHeight
+}
+
+window.addEventListener('resize', () => {
+    // Update sizes
+    sizes.width = window.innerWidth
+    sizes.height = window.innerHeight
+
+    //Update camera
+    camera.aspect = sizes.width / sizes.height
+    camera.updateProjectionMatrix()
+
+    // Update renderer
+    renderer.setSize(sizes.width, sizes.height)
+    // Se pone dentro del resize por si se cambia la pestaña de una ventana a otra
+    // Por ejemplo de la pantalla del portatil a una externa
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+})
+
+window.addEventListener('dblclick', () => {
+
+    const fullScreenElement = document.fullscreenElement || document.webkitFullscreenElement
+
+    if (!fullScreenElement){
+        if (canvas.requestFullscreen) canvas.requestFullscreen()
+        else if (canvas.webkitRequestFullscreen) canvas.webkitRequestFullscreen() // Safari 
+    } else {
+        if (document.exitFullscreen) document.exitFullscreen()
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen() // Safari
+    }
+})
+
+/**
+ * Camera
+ */
+// Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-
-/* const aspectRatio = sizes.width / sizes.height
-const camera = new THREE.OrthographicCamera(-1 * aspectRatio, 1 * aspectRatio, 1, -1, 0.1, 100) */
-
-/* camera.position.x = 2
-camera.position.y = 2 */
 camera.position.z = 3
-camera.lookAt(mesh.position)
 scene.add(camera)
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
+// controls.enabled = false
 controls.enableDamping = true
-// controls.target.y = 1
-// controls.update()
 
-// Renderer
+/**
+ * Renderer
+ */
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas
 })
 renderer.setSize(sizes.width, sizes.height)
+// Mejora la calidad de la imagen ajustandola al pixel ratio, pero si se tiene un pixel ratio
+// superior a 3, no se va a notar diferencia de ver los objetos, pero si de performance, por eso
+// se limita el pixel ratio a 2. Se podria poner a 3 como maximo si se necesita mas calidad
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
-// Animate
-// const clock = new THREE.Clock()
+
+/**
+ * Animate
+ */
+const clock = new THREE.Clock()
 
 const tick = () =>
 {
-    // const elapsedTime = clock.getElapsedTime()
-
-    // Update objects
-    // mesh.rotation.y = elapsedTime;
-
-    // Update camera
-    /* camera.position.x = cursor.x * 10
-    camera.position.y = cursor.y * 10 */
-    /* camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 2
-    camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 2
-    camera.position.y = cursor.y * 5
-    camera.lookAt(mesh.position) */
+    const elapsedTime = clock.getElapsedTime()
 
     // Update controls
     controls.update()
