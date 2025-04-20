@@ -16,92 +16,63 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
-// Axes Helper
-// const axesHelper = new THREE.AxesHelper()
-// scene.add(axesHelper)
-
 /**
  * Textures
  */
 const textureLoader = new THREE.TextureLoader()
-const matcapTexture = textureLoader.load('/textures/matcaps/8.png')
-// const matcapTexture2 = textureLoader.load('/textures/matcaps/8.png')
+const matcapTexture = textureLoader.load('textures/matcaps/8.png')
 matcapTexture.colorSpace = THREE.SRGBColorSpace
-
 
 /**
  * Fonts
  */
 const fontLoader = new FontLoader()
-fontLoader.load('/fonts/helvetiker_regular.typeface.json', (font) =>
-{
-    const bevelSize = 0.02
-    const bevelThickness = 0.03
-    const textGeometry = new TextGeometry(
-        'CPL121.eth',
+
+fontLoader.load(
+    '/fonts/helvetiker_regular.typeface.json',
+    (font) =>
+    {
+        // Material
+        const material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture })
+
+        // Text
+        const textGeometry = new TextGeometry(
+            'Hello Three.js',
+            {
+                font: font,
+                size: 0.5,
+                depth: 0.2,
+                curveSegments: 12,
+                bevelEnabled: true,
+                bevelThickness: 0.03,
+                bevelSize: 0.02,
+                bevelOffset: 0,
+                bevelSegments: 5
+            }
+        )
+        textGeometry.center()
+
+        const text = new THREE.Mesh(textGeometry, material)
+        scene.add(text)
+
+        // Donuts
+        const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 32, 64)
+
+        for(let i = 0; i < 100; i++)
         {
-            font: font,
-            size: 0.5,
-            depth: 0.2,
-            curveSegments: 5,
-            bevelEnabled: true,
-            bevelThickness: bevelThickness,
-            bevelSize: bevelSize,
-            bevelOffset: 0,
-            bevelSegments: 4
+            const donut = new THREE.Mesh(donutGeometry, material)
+            donut.position.x = (Math.random() - 0.5) * 10
+            donut.position.y = (Math.random() - 0.5) * 10
+            donut.position.z = (Math.random() - 0.5) * 10
+            donut.rotation.x = Math.random() * Math.PI
+            donut.rotation.y = Math.random() * Math.PI
+            const scale = Math.random()
+            donut.scale.set(scale, scale, scale)
+
+            scene.add(donut)
         }
-    )
-
-    // Center the text manually
-    // textGeometry.computeBoundingBox()
-    // textGeometry.translate(
-    //     - (textGeometry.boundingBox.max.x - bevelSize) * 0.5,
-    //     - (textGeometry.boundingBox.max.y - bevelSize) * 0.5,
-    //     - (textGeometry.boundingBox.max.z - bevelThickness) * 0.5,
-    // )
-    // textGeometry.computeBoundingBox()
-    // console.log(textGeometry.boundingBox);
-
-    textGeometry.center()
-    
-    const material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture })
-    // textMaterial.wireframe = true
-    const text = new THREE.Mesh(textGeometry, material)
-    scene.add(text)
-
-    console.time('donuts')
-
-    const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 20, 45)
-    // const donutMaterial = new THREE.MeshMatcapMaterial({ matcap: matcapTexture2 })
-
-    for (let i = 0; i < 1000; i++) {
-        const donut = new THREE.Mesh(donutGeometry, material)
-
-        donut.position.x = (Math.random() - 0.5) * 50
-        donut.position.y = (Math.random() - 0.5) * 50
-        donut.position.z = (Math.random() - 0.5) * 50
-
-        donut.rotation.x = (Math.random() - 0.5) * Math.PI
-        donut.rotation.y = (Math.random() - 0.5) * Math.PI
-
-        const scale = Math.random()
-        donut.scale.set(scale, scale, scale)
-
-        scene.add(donut)
     }
-
-    console.timeEnd('donuts')
-})
-
-/**
- * Object
- */
-const cube = new THREE.Mesh(
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshBasicMaterial()
 )
-
-// scene.add(cube)
 
 /**
  * Sizes
