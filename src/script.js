@@ -15,47 +15,13 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
 /**
- * Textures
+ * Test cube
  */
-const textureLoader = new THREE.TextureLoader()
-const particleTexture = textureLoader.load('/textures/particles/2.png')
-
-/**
- * Particles
- */
-// const particleGeometry = new THREE.SphereGeometry(1, 32, 32)
-// const particlesMaterial = new THREE.PointsMaterial({ size: 0.02, sizeAttenuation: true })
-// const particleMesh = new THREE.Points(particleGeometry, particlesMaterial)
-// scene.add(particleMesh)
-
-const particleGeometry = new THREE.BufferGeometry()
-const count = 20000
-const positions = new Float32Array(count * 3)
-const colors = new Float32Array(count * 3)
-
-for (let i = 0; i < count * 3; i++) {
-    positions[i] = (Math.random() - 0.5) * 10
-    colors[i] = Math.random()
-}
-particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
-
-const particlesMaterial = new THREE.PointsMaterial()
-particlesMaterial.size = 0.1
-particlesMaterial.sizeAttenuation = true
-particlesMaterial.color = new THREE.Color('#ff88cc')
-// particlesMaterial.map = particleTexture
-particlesMaterial.alphaMap = particleTexture
-particlesMaterial.transparent = true
-// particlesMaterial.alphaTest = 0.001
-// particlesMaterial.depthTest = false
-particlesMaterial.depthWrite = false
-particlesMaterial.blending = THREE.AdditiveBlending
-particlesMaterial.vertexColors = true
-
-
-const particles = new THREE.Points(particleGeometry, particlesMaterial)
-scene.add(particles)
+const cube = new THREE.Mesh(
+    new THREE.BoxGeometry(1, 1, 1),
+    new THREE.MeshBasicMaterial()
+)
+scene.add(cube)
 
 /**
  * Sizes
@@ -85,6 +51,8 @@ window.addEventListener('resize', () =>
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
+camera.position.x = 3
+camera.position.y = 3
 camera.position.z = 3
 scene.add(camera)
 
@@ -110,16 +78,6 @@ const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
 
-    // Update particles
-    // particles.rotation.y = elapsedTime * 0.2
-    for (let i = 0; i < count; i++) {
-        const i3 = i * 3
-        const y = i3 + 1
-        const x = particleGeometry.attributes.position.array[i3]
-        particleGeometry.attributes.position.array[y] = Math.sin(elapsedTime + x)
-    }
-    particleGeometry.attributes.position.needsUpdate = true
-    
     // Update controls
     controls.update()
 
