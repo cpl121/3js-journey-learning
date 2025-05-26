@@ -21,6 +21,9 @@ importers:
         specifier: ^0.175.0
         version: 0.175.0
     devDependencies:
+      cannon-es:
+        specifier: 0.15.1
+        version: 0.15.1
       vite:
         specifier: ^6.2.6
         version: 6.2.6
@@ -287,6 +290,9 @@ packages:
     resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
     engines: {node: '>=8'}
 
+  cannon-es@0.15.1:
+    resolution: {integrity: sha512-NkrU8OkM5K4q7Ljj69nfwC5UmPuoiAga6v98Aus0QHTdgJFwBfPTDXRkc3qpGGOixdUisFzmJo0DpKWIi6N+4g==}
+
   dat.gui@0.7.9:
     resolution: {integrity: sha512-sCNc1OHobc+Erc1HqiswYgHdVNpSJUlk/Hz8vzOCsER7rl+oF/4+v8GXFUyCgtXpoCX6+bnmg07DedLvBLwYKQ==}
 
@@ -537,6 +543,8 @@ snapshots:
   braces@3.0.3:
     dependencies:
       fill-range: 7.1.1
+
+  cannon-es@0.15.1: {}
 
   dat.gui@0.7.9: {}
 
