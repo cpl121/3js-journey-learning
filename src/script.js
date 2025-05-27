@@ -1,18 +1,57 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import GUI from 'lil-gui'
+import * as dat from 'dat.gui'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 
 /**
  * Base
  */
 // Debug
-const gui = new GUI()
+const gui = new dat.GUI()
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
+
+/**
+ * Models
+ */
+const gltfLoader = new GLTFLoader()
+const dracoLoader = new DRACOLoader()
+dracoLoader.setDecoderPath('/draco/')
+gltfLoader.setDRACOLoader(dracoLoader)
+
+let mixer = null
+
+gltfLoader.load(
+    // Fox
+    '/models/Fox/glTF/Fox.gltf',
+
+    // Flight Helmet
+    // '/models/FlightHelmet/glTF/FlightHelmet.gltf',
+
+    // Duck
+    // '/models/Duck/glTF-Embedded/Duck.gltf',
+    // '/models/Duck/glTF-Binary/Duck.glb',
+    // '/models/Duck/glTF-Draco/Duck.gltf',
+    // '/models/Duck/glTF/Duck.gltf',
+    (gltf) => {
+        // const children = [...gltf.scene.children]
+        // for (const child of children) {
+        //     scene.add(child)
+        // }
+
+        mixer = new THREE.AnimationMixer(gltf.scene)
+        const action = mixer.clipAction(gltf.animations[2])
+        action.play()
+
+        gltf.scene.scale.set(0.025, 0.025, 0.025)
+        scene.add(gltf.scene)
+    },
+)
 
 /**
  * Floor
@@ -104,6 +143,11 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - previousTime
     previousTime = elapsedTime
+
+    // Update mixer
+    if (mixer) {
+        mixer.update(deltaTime)
+    }
 
     // Update controls
     controls.update()
