@@ -4,6 +4,7 @@ import * as dat from 'dat.gui'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js'
+import { GroundedSkybox } from 'three/addons/objects/GroundedSkybox.js'
 
 /**
  * Loaders
@@ -12,6 +13,7 @@ const gltfLoader = new GLTFLoader()
 const cubeTextureLoader = new THREE.CubeTextureLoader()
 const rgbeLoader = new RGBELoader()
 const exrLoader = new EXRLoader()
+const textureLoader = new THREE.TextureLoader()
 
 /**
  * Base
@@ -28,9 +30,9 @@ const scene = new THREE.Scene()
 /**
  * Enviroment map
  */
-scene.environmentIntensity = 4
-scene.backgroundBlurriness = 0.05
-scene.backgroundIntensity = 2
+scene.environmentIntensity = 1
+scene.backgroundBlurriness = 0
+scene.backgroundIntensity = 1
 // scene.backgroundRotation.x = 1
 // scene.environmentRotation.x = 1
 
@@ -56,19 +58,70 @@ gui.add(scene.environmentRotation, 'y').min(0).max(Math.PI * 2).step(0.001).name
 
 
 // HDR (RGBE) equirectangular
+// rgbeLoader.load('/environmentMaps/solarpunk.hdr', (envMap) => {
+// rgbeLoader.load('/environmentMaps/mountains.hdr', (envMap) => {
 // rgbeLoader.load('/environmentMaps/blender-2k.hdr', (envMap) => {
 //     envMap.mapping = THREE.EquirectangularReflectionMapping
 //     scene.environment = envMap
-//     // scene.background = envMap
+//     scene.background = envMap
 // })
 
 // HDR (EXR) equirectangular
-exrLoader.load('/environmentMaps/nvidiaCanvas-4k.exr', (envMap) => {
-    envMap.mapping = THREE.EquirectangularReflectionMapping
-    scene.environment = envMap
-    scene.background = envMap
-})
+// exrLoader.load('/environmentMaps/nvidiaCanvas-4k.exr', (envMap) => {
+//     envMap.mapping = THREE.EquirectangularReflectionMapping
+//     scene.environment = envMap
+//     scene.background = envMap
+// })
 
+// LDR Equirectangular
+// const environmentMap = textureLoader.load('/environmentMaps/solarpunk.jpg')
+// const environmentMap = textureLoader.load('/environmentMaps/blockadesLabsSkybox/anime_art_style_japan_streets_with_cherry_blossom_.jpg')
+// environmentMap.mapping = THREE.EquirectangularReflectionMapping
+// environmentMap.colorSpace = THREE.SRGBColorSpace
+
+// scene.background = environmentMap
+// scene.environment = environmentMap
+
+// Gounde projected skybox
+// rgbeLoader.load('/environmentMaps/1/2k.hdr', (envMap) => {
+//     envMap.mapping = THREE.EquirectangularReflectionMapping
+//     scene.environment = envMap
+//     // scene.background = envMap
+
+//     // Skybox
+//     const skybox = new GroundedSkybox(envMap, 15, 70)
+//     // skybox.material.wireframe = true
+//     // skybox.radius = 15
+//     // skybox.height = 10
+//     // skybox.scale.setScalar(50)
+//     skybox.position.y = 15
+//     scene.add(skybox)
+// })
+
+/**
+ * Real time environment map
+ */
+const environmentMap = textureLoader.load('/environmentMaps/blockadesLabsSkybox/interior_views_cozy_wood_cabin_with_cauldron_and_p.jpg')
+environmentMap.mapping = THREE.EquirectangularReflectionMapping
+environmentMap.colorSpace = THREE.SRGBColorSpace
+
+scene.background = environmentMap
+
+// holy donut
+const holyDonut = new THREE.Mesh(
+    new THREE.TorusGeometry(8, 0.5),
+    new THREE.MeshBasicMaterial({color: new THREE.Color(10, 4, 2) })
+)
+holyDonut.layers.enable(1)
+holyDonut.position.y = 3.5
+scene.add(holyDonut)
+
+// cube render target
+const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256, { type: THREE.HalfFloatType })
+scene.environment = cubeRenderTarget.texture
+
+const cubeCamera = new THREE.CubeCamera(0.1, 100, cubeRenderTarget)
+cubeCamera.layers.set(1)
 
 /**
  * Torus Knot
@@ -76,7 +129,7 @@ exrLoader.load('/environmentMaps/nvidiaCanvas-4k.exr', (envMap) => {
 const torusKnot = new THREE.Mesh(
     new THREE.TorusKnotGeometry(1, 0.4, 100, 16),
     new THREE.MeshStandardMaterial({
-        roughness: 0.3, metalness: 1, color: 0xaaaaaa
+        roughness: 0, metalness: 1, color: 0xaaaaaa
     })
 )
 torusKnot.position.x = -4
@@ -151,6 +204,12 @@ const tick = () =>
 {
     // Time
     const elapsedTime = clock.getElapsedTime()
+
+    if (holyDonut) {
+        holyDonut.rotation.x = Math.sin(elapsedTime) * 2
+        cubeCamera.update(renderer, scene)
+    }
+
 
     // Update controls
     controls.update()
