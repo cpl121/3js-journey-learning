@@ -1,10 +1,10 @@
-import Camera from "./Camera"
-import Renderer from "./Renderer"
-import Resources from "./Utils/Resources"
-import Sizes from "./Utils/Sizes"
-import Time from "./Utils/Time"
-import Debug from "./Utils/Debug"
-import World from "./World/World"
+import Camera from "./Camera.js"
+import Renderer from "./Renderer.js"
+import Resources from "./Utils/Resources.js"
+import Sizes from "./Utils/Sizes.js"
+import Time from "./Utils/Time.js"
+import Debug from "./Utils/Debug.js"
+import World from "./World/World.js"
 import sources from './sources.js'
 import * as THREE from 'three'
 
