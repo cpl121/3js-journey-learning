@@ -63,6 +63,7 @@ const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
     antialias: true
 })
+
 renderer.setClearColor(rendererParameters.clearColor)
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -88,6 +89,7 @@ const torusKnot = new THREE.Mesh(
     material
 )
 torusKnot.position.x = 3
+torusKnot.position.y = -1 // TODO: Remove
 scene.add(torusKnot)
 
 // Sphere
