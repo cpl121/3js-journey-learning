@@ -2,6 +2,8 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import GUI from 'lil-gui'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import holographicVertexShader from './shaders/holographic/vertex.glsl'
+import holographicFragmentShader from './shaders/holographic/fragment.glsl'
 
 /**
  * Base
@@ -78,7 +80,28 @@ gui
 /**
  * Material
  */
-const material = new THREE.MeshBasicMaterial()
+const materialParameters = {}
+materialParameters.color = '#70c1ff'
+
+gui
+    .addColor(materialParameters, 'color')
+    .onChange(() =>
+    {
+        material.uniforms.uColor.value.set(materialParameters.color)
+    })
+
+const material = new THREE.ShaderMaterial({
+    vertexShader: holographicVertexShader,
+    fragmentShader: holographicFragmentShader,
+    uniforms: {
+        uTime: new THREE.Uniform(0),
+        uColor: new THREE.Uniform(new THREE.Color(materialParameters.color))
+    },
+    transparent: true,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+})
 
 /**
  * Objects
@@ -123,6 +146,8 @@ const clock = new THREE.Clock()
 const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
+
+    material.uniforms.uTime.value = elapsedTime;
 
     // Rotate objects
     if(suzanne)
